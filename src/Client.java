@@ -13,95 +13,136 @@ public class Client {
 		ServerIF server;
 		Boolean exit = true;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		while (exit) {
-			try {
+		try {
+			while (exit) {
 				server = menuTui();
-				userChoice(server,exit,reader);
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NotBoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NullDataException e) {
-				
+				exit = userChoice(server,reader);
 			}
+		} catch (NotBoundException | NullDataException | RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
-	private static void userChoice(ServerIF server, Boolean exit, BufferedReader reader)
-	        throws IOException, RemoteException, NullDataException {
-	    String sChoice = reader.readLine().trim();
-	    switch(sChoice) {
-	    case "1":
-	        System.out.println("Server' answer:");
-	        System.out.println("sId        name    department  completedCoursesList ");
-	        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-	        showList(server.getAllStudentData()); // 통합된 출력 함수 호출
-	    	break;
-	    case "2":
-	        System.out.println("Server' answer:");
-	        System.out.println("cId        professor    cName         preRequisite ");
-	        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-	        showList(server.getAllCourseData()); // 통합된 출력 함수 호출
-	        break;
-	    case "3":
-	    	addStudent(server, reader);
-	    	break;
-	    case "4":
+
+	private static boolean userChoice(ServerIF server, BufferedReader reader)
+			throws IOException, RemoteException, NullDataException {
+		String sChoice = reader.readLine().trim();
+		switch (sChoice) {
+		case "1":
+			getAllStudentsTui(server);
+			break;
+		case "2":
+			getAllcourseTui(server);
+			break;
+		case "3":
+			addStudent(server, reader);
+			break;
+		case "4":
 			deleteStudent(server, reader);
 			break;
-	    case "x":
-	        System.out.println("Process Stopped.");
-	        exit = false;
-	    default:
-	    	System.out.println("invalid choice!!!");
-	    }
+		case "5":
+			addCourse(server, reader);
+			break;
+		case "6":
+			deleteCourse(server, reader);
+			break;
+		case "7":
+			deleteStudent(server, reader);
+			break;
+		case "x":
+			System.out.println("Process Stopped.");
+			return false;
+		default:
+			System.out.println("invalid choice!!!");
+		}return true;
 	}
+
 	
-	private static void addStudent(ServerIF server, BufferedReader reader) throws RemoteException, IOException{
+
+	private static void deleteCourse(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
+		System.out.print("Course ID: ");
+		if (server.deleteCourse(reader.readLine().trim()))
+			System.out.println("SUCCESS");
+		else
+			System.out.println("FAIL");
+	}
+
+	private static void addCourse(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
+		System.out.println("------Course Information------");
+		System.out.print("Course ID: ");
+		String courseId = reader.readLine().trim();
+		System.out.print("Professor : ");
+		String professor = reader.readLine().trim();
+		System.out.print("Course Name: ");
+		String courseName = reader.readLine().trim();
+		System.out.print("Course preRequisite: ");
+		String pre = reader.readLine().trim();
+
+		if (server.addCourse(courseId + " " + professor + " " + courseName + " " + pre))
+			System.out.println("SUCCESS");
+		else
+			System.out.println("FAIL");
+	}
+
+	private static void getAllStudentsTui(ServerIF server) throws RemoteException, NullDataException {
+		System.out.println("Server's answer.");
+		System.out.println("sId        name    department  completedCoursesList ");
+		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+		showList(server.getAllStudentData()); // 통합된 출력 함수 호출
+	}
+
+	private static void getAllcourseTui(ServerIF server) throws RemoteException, NullDataException {
+		System.out.println("Server's answer.");
+		System.out.println("cId        professor    cName         preRequisite ");
+		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+		showList(server.getAllCourseData()); // 통합된 출력 함수 호출
+	}
+
+	private static void addStudent(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
 		System.out.println("------Student Information------");
-		System.out.println("Student ID: "); String studentId = reader.readLine().trim();
-		System.out.println("Student Name: "); String studentName = reader.readLine().trim();
-		System.out.println("Student Department: "); String studentDept = reader.readLine().trim();
-		System.out.println("Student Completed Course List: "); String completedCourse = reader.readLine().trim();
-		
-		if(server.addStudent(studentId+" "+studentName+" "+studentDept+" "+completedCourse))System.out.println("SUCCESS");
-		else System.out.println("FAIL");
-		}
-	
+		System.out.print("Student ID: ");
+		String studentId = reader.readLine().trim();
+		System.out.print("Student Name: ");
+		String studentName = reader.readLine().trim();
+		System.out.print("Student Department: ");
+		String studentDept = reader.readLine().trim();
+		System.out.print("Student Completed Course List: ");
+		String completedCourse = reader.readLine().trim();
+
+		if (server.addStudent(studentId + " " + studentName + " " + studentDept + " " + completedCourse))
+			System.out.println("SUCCESS");
+		else
+			System.out.println("FAIL");
+	}
+
 	private static void deleteStudent(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
 		System.out.print("Stident ID: ");
-	    if(server.deleteStudent(reader.readLine().trim()))System.out.println("SUCCESS");
-	    else System.out.println("FAIL");
+		if (server.deleteStudent(reader.readLine().trim()))
+			System.out.println("SUCCESS");
+		else
+			System.out.println("FAIL");
 	}
 
 	private static ServerIF menuTui() throws NotBoundException, MalformedURLException, RemoteException {
 		ServerIF server;
 		server = (ServerIF) Naming.lookup("Server");
-		System.out.println();
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡnewㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		System.out.println("ㅣ                                      ㅣ");
-		System.out.println("ㅣ          1. List Students            ㅣ");
-		System.out.println("ㅣ                                      ㅣ");
-		System.out.println("ㅣ          2. List Courses             ㅣ");
-		System.out.println("ㅣ                                      ㅣ");
-		System.out.println("ㅣ          3. Add Student              ㅣ");
-		System.out.println("ㅣ                                      ㅣ");
-		System.out.println("ㅣ          4. Delete Student           ㅣ");
-		System.out.println("ㅣ                                      ㅣ");
-		System.out.println("ㅣ          Press 'x' to exit           ㅣ");
-		System.out.println("ㅣ                                      ㅣ");
-		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡchooseㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
+		System.out.println("**********new**********");
+		System.out.println("1. List Students");
+		System.out.println("2. List Courses");
+		System.out.println("3. Add Student");
+		System.out.println("4. Delete Student");
+		System.out.println("5. Add Course");
+		System.out.println("6. Delete Course");
+		System.out.println("");
+		System.out.println("Press 'x' to exit");
+		System.out.println("***********************");
 		return server;
 	}
-	
+
 	public static void showList(ArrayList<?> dataList) {
 		String list = "";
-		for(int i=0;i<dataList.size();i++) {
-			list += dataList.get(i)+"\n";
+		for (int i = 0; i < dataList.size(); i++) {
+			list += dataList.get(i) + "\n";
 		}
 		System.out.println(list);
 	}
