@@ -37,13 +37,13 @@ public class Client {
 	        System.out.println("Server' answer:");
 	        System.out.println("sId        name    department  completedCoursesList ");
 	        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-	        printInformationList(students); // 통합된 출력 함수 호출
+	        showList(students); // 통합된 출력 함수 호출
 	    } else if (sChoice.equals("2")) {
 	        ArrayList<Course> courses = server.getAllCourseData();
 	        System.out.println("Server' answer:");
 	        System.out.println("cId        professor    cName         preRequisite ");
 	        System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-	        printInformationList(courses); // 통합된 출력 함수 호출
+	        showList(courses); // 통합된 출력 함수 호출
 	    } else if (sChoice.equals("x")) {
 	        System.out.println("Process Stopped.");
 	        exit = false;
@@ -68,28 +68,11 @@ public class Client {
 		return server;
 	}
 	
-	public static void printInformationList(ArrayList<? extends Information> list) {
-	    for (Information info : list) {
-	        if (info instanceof Student) {
-	            Student student = (Student) info;
-	            // 한 줄에 여러 필드를 연결해서 출력
-	            System.out.println(student.getDepartment() + " " 
-	                               + student.getId() + " "
-	                               + student.getName() + " "
-	                               + student.getCompletedCourses().toString());
-	            System.out.println(); // 한 학생 정보가 끝난 후 빈 줄로 구분
-	        } else if (info instanceof Course) {
-	            Course course = (Course) info;
-	            // 한 줄에 여러 필드를 연결해서 출력
-	            System.out.println(course.getId() + " " 
-	                               + course.getcName() + " " 
-	                               + course.getName() + " "
-	                               + course.getPreRequisite());
-	            System.out.println(); // 한 강좌 정보가 끝난 후 빈 줄로 구분
-	        }
-	    }
+	public static void showList(ArrayList<?> dataList) {
+		String list = "";
+		for(int i=0;i<dataList.size();i++) {
+			list += dataList.get(i)+"\n";
+		}
+		System.out.println(list);
 	}
-
-
-
 }
