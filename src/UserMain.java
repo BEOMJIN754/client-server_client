@@ -6,17 +6,14 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 public class UserMain {
-	private ServerIF server;
 
-	public void run(ServerIF server) throws IOException {
-		this.server = server;
-
-		Boolean exit = true;
+	public void run(ServerIF server, String sessionId) throws IOException {
+		boolean exit = true;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		try {
 			while (exit) {
 				this.showMenuTui();
-				exit = userChoice(server, reader);
+				exit = userChoice(server, reader, sessionId);
 			}
 		} catch (NotBoundException | NullDataException | RemoteException | WrongInputException e) {
 			// TODO Auto-generated catch block
@@ -39,98 +36,101 @@ public class UserMain {
 		System.out.println("***********************");
 	}
 
-	private static boolean userChoice(ServerIF server, BufferedReader reader)
+	private static boolean userChoice(ServerIF server, BufferedReader reader, String sessionId)
 			throws IOException, RemoteException, NullDataException, WrongInputException, NotBoundException {
 		String sChoice = reader.readLine().trim();
 		switch (sChoice) {
 		case "1":
-			getAllStudentsTui(server);
+			getAllStudentsTui(server,sessionId);
 			break;
 		case "2":
-			getAllcourseTui(server);
+			getAllcourseTui(server,sessionId);
 			break;
 		case "3":
-			addStudent(server, reader);
+			addStudent(server, reader,sessionId);
 			break;
 		case "4":
-			deleteStudent(server, reader);
+			deleteStudent(server, reader,sessionId);
 			break;
 		case "5":
-			addCourse(server, reader);
+			addCourse(server, reader,sessionId);
 			break;
 		case "6":
-			deleteCourse(server, reader);
+			deleteCourse(server, reader,sessionId);
 			break;
 		case "7":
-			registerCourse(server, reader);
+			registerCourse(server, reader,sessionId);
 			break;
 		case "8":
-			getAllRegistrationTui(server, reader);
+			getAllRegistrationTui(server, reader,sessionId);
 			break;
 		case "x":
-			System.out.println("Process Stopped.");
+			if(server.logoutUser(sessionId)) {
+				System.out.println("정상적으로 로그아웃 되었습니다.");
 			return false;
+			}
+			else {System.out.println("로그아웃에 실패하였습니다.");return true;}
 		default:
 			System.out.println("invalid choice!!!");
 		}
 		return true;
 	}
 	
-	private static void getAllRegistrationTui(ServerIF server, BufferedReader reader) throws RemoteException, NullDataException {
+	private static void getAllRegistrationTui(ServerIF server, BufferedReader reader, String sessionId) throws RemoteException, NullDataException {
 		System.out.println("Server's answer.");
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		showList(server.getAllRegistrationData());
+		showList(server.getAllRegistrationData(sessionId));
 	}
 
-	private static void registerCourse(ServerIF server, BufferedReader reader) throws IOException, WrongInputException {
+	private static void registerCourse(ServerIF server, BufferedReader reader, String sessionId) throws IOException, WrongInputException {
 		System.out.print("Student ID: ");String studentId = reader.readLine().trim();
 		System.out.print("Course ID: ");String courseId = reader.readLine().trim();
 		
-		if(server.registerCourse(studentId,courseId))System.out.println("SUCCESS");
+		if(server.registerCourse(studentId,courseId,sessionId))System.out.println("SUCCESS");
 		else System.out.println("FAIL");
 	}
 
-	private static void deleteCourse(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
+	private static void deleteCourse(ServerIF server, BufferedReader reader, String sessionId) throws RemoteException, IOException {
 		System.out.print("Course ID: ");
-		if (server.deleteCourse(reader.readLine().trim()))System.out.println("SUCCESS");
+		if (server.deleteCourse(reader.readLine().trim(),sessionId))System.out.println("SUCCESS");
 		else System.out.println("FAIL");
 	}
 
-	private static void addCourse(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
+	private static void addCourse(ServerIF server, BufferedReader reader, String sessionId) throws RemoteException, IOException {
 		System.out.println("------Course Information------");
 		System.out.print("Course ID: ");String courseId = reader.readLine().trim();
 		System.out.print("Professor : ");String professor = reader.readLine().trim();
 		System.out.print("Course Name: ");String courseName = reader.readLine().trim();
 		System.out.print("Course preRequisite: ");String pre = reader.readLine().trim();
 
-		if (server.addCourse(courseId + " " + professor + " " + courseName + " " + pre))System.out.println("SUCCESS");
+		if (server.addCourse(courseId + " " + professor + " " + courseName + " " + pre,sessionId))System.out.println("SUCCESS");
 		else System.out.println("FAIL");}
 
-	private static void getAllStudentsTui(ServerIF server) throws RemoteException, NullDataException {
+	private static void getAllStudentsTui(ServerIF server, String sessionId) throws RemoteException, NullDataException {
 		System.out.println("Server's answer.");
 		System.out.println("sId        name    department  completedCoursesList ");
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		showList(server.getAllStudentData());}
+		showList(server.getAllStudentData(sessionId));}
 
-	private static void getAllcourseTui(ServerIF server) throws RemoteException, NullDataException {
+	private static void getAllcourseTui(ServerIF server, String sessionId) throws RemoteException, NullDataException {
 		System.out.println("Server's answer.");
 		System.out.println("cId        professor    cName         preRequisite ");
 		System.out.println("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ");
-		showList(server.getAllCourseData());}
+		showList(server.getAllCourseData(sessionId));}
 
-	private static void addStudent(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
+	private static void addStudent(ServerIF server, BufferedReader reader, String sessionId) throws RemoteException, IOException {
 		System.out.println("------Student Information------");
 		System.out.print("Student ID: ");String studentId = reader.readLine().trim();
 		System.out.print("Student Name: ");String studentName = reader.readLine().trim();
 		System.out.print("Student Department: ");String studentDept = reader.readLine().trim();
 		System.out.print("Student Completed Course List: ");String completedCourse = reader.readLine().trim();
 
-		if (server.addStudent(studentId + " " + studentName + " " + studentDept + " " + completedCourse))System.out.println("SUCCESS");
+		if (server.addStudent(studentId + " " + studentName + " " + studentDept + " " + completedCourse,sessionId))System.out.println("SUCCESS");
 		else System.out.println("FAIL");}
 
-	private static void deleteStudent(ServerIF server, BufferedReader reader) throws RemoteException, IOException {
+	private static void deleteStudent(ServerIF server, BufferedReader reader, String sessionId) throws RemoteException, IOException {
 		System.out.print("Student ID: ");
-		if (server.deleteStudent(reader.readLine().trim()))System.out.println("SUCCESS");
+		if (server.deleteStudent(reader.readLine().trim(),sessionId))System.out.println("SUCCESS");
 		else System.out.println("FAIL");}
 
 	public static void showList(ArrayList<?> dataList) {

@@ -41,8 +41,7 @@ public class Client {
                     signUp.signUp(server);
                     break;
                 case "2":
-                    logIn.logInDialog(server);
-                    break;
+                   logIn.logInDialog(server);
                 case "x":
                     System.out.println("프로그램 종료.");
                     exit = false;
