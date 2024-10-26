@@ -29,8 +29,8 @@ public class Client {
 
         while (exit) {
             System.out.println("****** Main Menu ******");
-            System.out.println("1. 회원 가입");
-            System.out.println("2. 로그인");
+            System.out.println("1. Sign up");
+            System.out.println("2. LogIn");
             System.out.println("Press 'x' to exit");
             System.out.println("**********************");
 
@@ -43,11 +43,11 @@ public class Client {
                 case "2":
                    logIn.logInDialog(server);
                 case "x":
-                    System.out.println("프로그램 종료.");
+                    System.out.println("Program stopped.");
                     exit = false;
                     break;
                 default:
-                    System.out.println("잘못된 입력입니다!");
+                    System.out.println("Invalid input!");
             }
         }
     }

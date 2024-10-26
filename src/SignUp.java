@@ -9,15 +9,23 @@ public class SignUp {
 		this.server = server;
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
-			System.out.print("사용하고자 하는 ID를 입력하세요. (8자리숫자): ");
+			System.out.print("Please enter the ID you want to use (8 digits): ");
 			String userId = reader.readLine().trim();
-			if (!isValidId(userId)) { System.out.println("ID는 8자리 숫자여야 합니다.");continue;}
-			System.out.println("사용하고자 하는 비밀번호를 입력하세요. (6~20자 사이의 문자열): ");
+			if (!isValidId(userId)) { System.out.println("The ID must be 8 digits.");continue;}
+			System.out.println("Please enter the password you want to use (6-20 characters): ");
 			String userPw = reader.readLine().trim();
-			if(!isValidPassword(userPw)) {System.out.println("비밀번호는 6~20자의 문자열이어야 합니다. (숫자 포함 가능)");continue;}
+			if(!isValidPassword(userPw)) {System.out.println("The password must be 6-20 characters. (may include numbers)");continue;}
+			System.out.println("Enter your first name (only Alphabet): ");
+			String firstName = reader.readLine().trim();
+			if (!isAlphabetic(firstName)) {
+			    System.out.println("First name must contain letters only.");continue;}
+			System.out.print("Enter your last name (only Alphabet): ");
+			String lastName = reader.readLine().trim();
+			if (!isAlphabetic(lastName)) {
+			    System.out.println("Last name must contain letters only.");continue;}
 			
-			if(server.signUp(userId,userPw)) {System.out.println("회원가입에 성공하셨습니다.");break;}
-			else System.out.println("회원가입에 실패하셨습니다.");
+			if(server.signUp(userId,userPw,firstName,lastName)) {System.out.println("You have successfully signed up.");break;}
+			else System.out.println("Sign-up failed.");
 		}
 		
 	}
@@ -29,5 +37,9 @@ public class SignUp {
 	private boolean isValidPassword(String userPw) {
 		return userPw.matches("^[a-zA-Z0-9]{6,20}$");
 	}
+	public static boolean isAlphabetic(String input) {
+	    return input.matches("[a-zA-Z]+"); // 알파벳만 포함하는 경우 true 반환
+	}
+
 
 }
